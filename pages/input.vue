@@ -7,9 +7,10 @@ div
   　　title="タスク一覧"
      @ok="onComplete"
   )
+    p(v-if="error" style="color:red;") ※{{error}}
     li(v-for="task_name in name_list") {{ task_name }}
     input(type="text" v-model="name")
-    b-button(@click="addTaskName")
+    b-button(@click="addTaskName") +
 </template>
 
 <script>
@@ -17,22 +18,36 @@ div
         props: ['task_name_list'],
         data() {
             return {
-                label:'aaaa',
                 name_list:[],
                 name:'',
-                data:''
+                error:''
             }
         },
         mounted: function(){
             this.name_list = this.task_name_list.concat();
         },
         methods: {
-            addTaskName() {
-                this.name_list.push(this.name);
-            },
-            onComplete() {
-                this.$emit('setNameList', this.name_list);
+          addTaskName() {
+            if(this.validation(this.name)){
+              this.name_list.push(this.name);
+              this.name='';
+            } 
+          },
+          onComplete() {
+            this.$emit('setNameList', this.name_list);
+          },
+          validation(name) {
+            this.error='';
+            if(!this.name){
+              this.error = 'タスク名を入力してください';
+              return false;
+            }else if(this.name_list.includes(name)){
+              this.error = 'すでに存在するタスク名です'
+              return false;
             }
+            return true;
+          }
+
         }
     }
 </script>

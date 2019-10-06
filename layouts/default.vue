@@ -1,8 +1,21 @@
 <template>
   <div>
+    <partsHeader />
     <nuxt />
+    <partsFooter/>
   </div>
 </template>
+
+<script type="text/javascript">
+  import partsHeader from '~/components/header.vue'
+  import partsFooter from '~/components/footer.vue'
+  export default {
+    components: {
+      partsHeader,
+      partsFooter
+    }
+  }
+</script>
 
 <style>
 html {

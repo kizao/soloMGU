@@ -1,5 +1,8 @@
 <template lang="pug">
 div
+  br
+  br
+  br
   table
     tr
       td(align="right") 作業時刻
@@ -26,19 +29,23 @@ div
   h3 作業時間 {{ working_time }}
   h3 {{time}}
   div(class="table-responsive" v-if="row_label.length > 0 && task_name_list.length > 0")
-    table(border="1" class="table" style="table-layout: fixed; width:100%")
+    table(border="1" class="table" style="table-layout: fixed; width:100%;")
       tr
-        td(class="task_col" style="width:5%;") タスク名
-        td(class="fortune_col" style="width:5%;") 予定/実
-        td(v-for="label in row_label") {{label}}
+        th(class="fortune_col") タスク名
+        th(class="fortune_col") ステータス
+        th(class="fortune_col") 予/実
+        th(v-for="label in row_label") {{label}}
       tbody(v-for="task_name in task_name_list")
-        tr(style="width:5%;")
-          td(rowspan="2" style="width:5%;") {{ task_name }}
-          td(style="width:5%;") 予定
+        tr
+          td(rowspan="2" class="fortune_col") {{ task_name }}
+          td(rowspan="2" class="fortune_col")
+            select(v-model="stats")
+              option(v-for="status_option in status_options") {{ status_option }}
+          td(class="fortune_col") 予定
           td(v-for="val in col_num" style="width:6%;")
             input(type="text" style="box-sizing:border-box; width:100%;")
         tr
-          td(style="width:5%;") 実績
+          td(class="fortune_col") 実績
           td(v-for="val in col_num" style="width:6%;")
             input(type="text" style="box-sizing:border-box; width:100%;")/so
   modal(
@@ -61,46 +68,51 @@ div
             modal
         },
         data() {
-            return {
-                col_num: 0,
-                working_time: 0,
-                DatePickerFormat: 'hh:mm',
-                task_num : 1,
-                start : '10:00',
-                end : '19:00',
-                break_time: 1,
-                row_label: [],
-                opitons: [
-                    '01:00',
-                    '02:00',
-                    '03:00',
-                    '04:00',
-                    '05:00',
-                    '06:00',
-                    '07:00',
-                    '08:00',
-                    '09:00',
-                    '10:00',
-                    '11:00',
-                    '12:00',
-                    '13:00',
-                    '14:00',
-                    '15:00',
-                    '16:00',
-                    '17:00',
-                    '18:00',
-                    '19:00',
-                    '20:00',
-                    '21:00',
-                    '22:00',
-                    '23:00',
-                    '24:00'
-                ],
-                showModal: false,
-                time:'',
-                task_name_list:[]
-
-            }
+          return {
+            col_num: 0,
+            working_time: 0,
+            DatePickerFormat: 'hh:mm',
+            task_num : 1,
+            start : '10:00',
+            end : '19:00',
+            break_time: 1,
+            row_label: [],
+            opitons: [
+              '01:00',
+              '02:00',
+              '03:00',
+              '04:00',
+              '05:00',
+              '06:00',
+              '07:00',
+              '08:00',
+              '09:00',
+              '10:00',
+              '11:00',
+              '12:00',
+              '13:00',
+              '14:00',
+              '15:00',
+              '16:00',
+              '17:00',
+              '18:00',
+              '19:00',
+              '20:00',
+              '21:00',
+              '22:00',
+              '23:00',
+              '24:00'
+            ],
+            showModal: false,
+            time:'',
+            task_name_list:[],
+            status_options:[
+              '未着手',
+              '着手中',
+              '完了'
+            ],
+            stats:'未着手'
+          }
         },
         mounted () {
             setTimeout(this.alert, this.nextRefreshTime());
@@ -144,5 +156,9 @@ div
   }
   fortune_col{
     width:3%;
+    white-space: nowrap;
+  }
+  is_complete{
+    background-color: red;
   }
 </style>
