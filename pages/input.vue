@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  b-button(v-b-modal.modal-center>タスク追加)
+  b-button(v-b-modal.modal-center) タスク追加
   b-modal(
   　　id="modal-center"
   　　centered
