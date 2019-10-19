@@ -7,22 +7,22 @@ div
     tr
       td(align="right") 作業時刻
       td
-        select(v-model="start")
+        select(v-model="start" class="form-control")
           option(v-for="option in opitons") {{option}}
       td
       td 〜
       td(align="right")
       td
-        select(v-model="end")
+        select(v-model="end" class="form-control")
           option(v-for="option in opitons") {{option}}
     tr
       td 休憩時間
       td
-        select(v-model="break_time")
+        select(v-model="break_time" class="form-control")
           option(v-for="time in 10") {{time}}
     tr
       td
-        button(@click="send") 送信
+        button(@click="send" class="btn btn-primary") 送信
 
   br
   br
@@ -35,12 +35,12 @@ div
         th(class="fortune_col") ステータス
         th(class="fortune_col") 予/実
         th(v-for="label in row_label") {{label}}
-      tbody(v-for="task_name in task_name_list")
+      tbody(v-for="(task_name,i) in task_name_list")
         tr
           td(rowspan="2" class="fortune_col") {{ task_name }}
           td(rowspan="2" class="fortune_col")
-            select(v-model="stats")
-              option(v-for="status_option in status_options") {{ status_option }}
+            select(v-model="task_status_list[i]" class="form-control" @change="fetchTags")
+              option(v-for="status_option in status_options" :value="status_option.id") {{ status_option.label }}
           td(class="fortune_col") 予定
           td(v-for="val in col_num" style="width:6%;")
             input(type="text" style="box-sizing:border-box; width:100%;")
@@ -48,9 +48,7 @@ div
           td(class="fortune_col") 実績
           td(v-for="val in col_num" style="width:6%;")
             input(type="text" style="box-sizing:border-box; width:100%;")
-  modal(
-    :task_name_list="task_name_list"
-  )
+  modal
 </template>
 <script>
   import modal from './input'
@@ -105,11 +103,12 @@ div
         ],
         time:'',
         status_options:[
-          '未着手',
-          '着手中',
-          '完了'
+          {id:1, label:'未着手'},
+          {id:2,  label: '着手中'},
+          {id:3,  label: '完了'}
         ],
-        stats:'未着手',
+        task_status_list:{},
+        val:'未着手',
         task_data:{
           user_id:1,
           task_list:[
@@ -136,13 +135,21 @@ div
     },
     created () {
       this.init();
+      console.log(this.status_list);
     },
     computed: {
       ...mapState({
-        task_name_list: state => state.task_name_list
+        task_name_list: state => state.task_name_list,
+        status_list: state => state.status_list
       })
     },
+    watch: {
+      status_list: function(newValue) {
+        this.task_status_list = JSON.parse(JSON.stringify(newValue));
+      }
+    },
     methods: {
+      ...mapMutations(['setStatus']),
       init(){
         this.send();
       },
@@ -161,6 +168,9 @@ div
       alert() {
         Push.create("プッシュ通知！");
         setTimeout(this.alert, this.nextRefreshTime());
+      },
+      fetchTags() {
+        this.setStatus(this.task_status_list);
       }
     }
   }

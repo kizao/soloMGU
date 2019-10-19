@@ -8,7 +8,8 @@ div
      @ok="onComplete"
   )
     p(v-if="error" style="color:red;") ※{{error}}
-    li(v-for="task_name in name_list") {{ task_name }}
+    ul(class="list-group" style="max-width: 400px;")
+      li(class="list-group-item" v-for="(task_name,i) in name_list" @click="delName(i)") {{ task_name }}
     input(type="text" v-model="name")
     b-button(@click="addTaskName") +
 </template>
@@ -16,19 +17,30 @@ div
 <script>
   import {mapState, mapMutations, mapActions} from 'vuex';
   export default {
-    props: ['task_name_list'],
     data() {
       return {
         name_list:[],
+        tmp_status_list:{},
         name:'',
         error:''
       }
     },
-    mounted: function(){
-      this.name_list = this.task_name_list.concat();
+    computed: {
+      ...mapState({
+        task_name_list: state => state.task_name_list,
+        status_list: state => state.status_list
+      })
+    },
+    watch: {
+      task_name_list: function(newValue) {
+        this.name_list = newValue.concat();
+      },
+      status_list: function(newValue) {
+        this.tmp_status_list = JSON.parse(JSON.stringify(newValue));
+      }
     },
     methods: {
-      ...mapMutations(['add']),
+      ...mapMutations(['setTaskName','delTaskName']),
       addTaskName() {
         if(this.validation(this.name)){
           this.name_list.push(this.name);
@@ -36,8 +48,7 @@ div
         }
       },
       onComplete() {
-        this.add(this.name_list);
-        //this.$emit('setNameList', this.name_list);
+        this.setTaskName({name_list: this.name_list, status_list: this.tmp_status_list});
       },
       validation(name) {
         this.error='';
@@ -49,7 +60,11 @@ div
           return false;
         }
         return true;
-      }
+      },
+      delName(i) {
+        this.name_list.splice(i, 1);
+        delete this.tmp_status_list[i];
+      },
 
     }
   }
