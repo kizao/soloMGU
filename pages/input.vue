@@ -14,42 +14,45 @@ div
 </template>
 
 <script>
-    export default {
-        props: ['task_name_list'],
-        data() {
-            return {
-                name_list:[],
-                name:'',
-                error:''
-            }
-        },
-        mounted: function(){
-            this.name_list = this.task_name_list.concat();
-        },
-        methods: {
-          addTaskName() {
-            if(this.validation(this.name)){
-              this.name_list.push(this.name);
-              this.name='';
-            } 
-          },
-          onComplete() {
-            this.$emit('setNameList', this.name_list);
-          },
-          validation(name) {
-            this.error='';
-            if(!this.name){
-              this.error = 'タスク名を入力してください';
-              return false;
-            }else if(this.name_list.includes(name)){
-              this.error = 'すでに存在するタスク名です'
-              return false;
-            }
-            return true;
-          }
-
+  import {mapState, mapMutations, mapActions} from 'vuex';
+  export default {
+    props: ['task_name_list'],
+    data() {
+      return {
+        name_list:[],
+        name:'',
+        error:''
+      }
+    },
+    mounted: function(){
+      this.name_list = this.task_name_list.concat();
+    },
+    methods: {
+      ...mapMutations(['add']),
+      addTaskName() {
+        if(this.validation(this.name)){
+          this.name_list.push(this.name);
+          this.name='';
         }
+      },
+      onComplete() {
+        this.add(this.name_list);
+        //this.$emit('setNameList', this.name_list);
+      },
+      validation(name) {
+        this.error='';
+        if(!this.name){
+          this.error = 'タスク名を入力してください';
+          return false;
+        }else if(this.name_list.includes(name)){
+          this.error = 'すでに存在するタスク名です'
+          return false;
+        }
+        return true;
+      }
+
     }
+  }
 </script>
 
 <style lang="scss">

@@ -47,107 +47,123 @@ div
         tr
           td(class="fortune_col") 実績
           td(v-for="val in col_num" style="width:6%;")
-            input(type="text" style="box-sizing:border-box; width:100%;")/so
+            input(type="text" style="box-sizing:border-box; width:100%;")
   modal(
     :task_name_list="task_name_list"
-    @setNameList="setNameList"
   )
 </template>
 <script>
-    import modal from './input'
-    export default {
-        head () {
-            return {
-                script: [
-                    { src: 'https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.9/push.min.js' }
-                ],
-                link: []
-            }
-        },
-        components: {
-            modal
-        },
-        data() {
-          return {
-            col_num: 0,
-            working_time: 0,
-            DatePickerFormat: 'hh:mm',
-            task_num : 1,
-            start : '10:00',
-            end : '19:00',
-            break_time: 1,
-            row_label: [],
-            opitons: [
-              '01:00',
-              '02:00',
-              '03:00',
-              '04:00',
-              '05:00',
-              '06:00',
-              '07:00',
-              '08:00',
-              '09:00',
-              '10:00',
-              '11:00',
-              '12:00',
-              '13:00',
-              '14:00',
-              '15:00',
-              '16:00',
-              '17:00',
-              '18:00',
-              '19:00',
-              '20:00',
-              '21:00',
-              '22:00',
-              '23:00',
-              '24:00'
-            ],
-            showModal: false,
-            time:'',
-            task_name_list:[],
-            status_options:[
-              '未着手',
-              '着手中',
-              '完了'
-            ],
-            stats:'未着手'
-          }
-        },
-        mounted () {
-            setTimeout(this.alert, this.nextRefreshTime());
-        },
-        created () {
-            this.init();
-        },
-        methods: {
-            init(){
-                this.send();
-            },
-            nextRefreshTime() {
-                let minute = new Date().getMinutes();
-                return (30 - (minute % 30)) * 60 * 1000;
-            },
-            send () {
-                this.col_num =  Number(this.end.slice(0,2)) - Number(this.start.slice(0,2)) + 1;
-                this.working_time= Number(this.end.slice(0,2)) - Number(this.start.slice(0,2)) - this.break_time;
-                for (var i = this.start.slice(0,2); i < Number(this.start.slice(0,2)) + this.col_num; i++){
-                    var label =  i + ':00'
-                    this.row_label.push(label);
+  import modal from './input'
+  import {mapState, mapMutations, mapActions} from 'vuex';
+  export default {
+    head () {
+      return {
+        script: [
+          { src: 'https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.9/push.min.js' }
+        ],
+        link: []
+      }
+    },
+    components: {
+      modal
+    },
+    data() {
+      return {
+        col_num: 0,
+        working_time: 0,
+        DatePickerFormat: 'hh:mm',
+        task_num : 1,
+        start : '10:00',
+        end : '19:00',
+        break_time: 1,
+        row_label: [],
+        opitons: [
+          '01:00',
+          '02:00',
+          '03:00',
+          '04:00',
+          '05:00',
+          '06:00',
+          '07:00',
+          '08:00',
+          '09:00',
+          '10:00',
+          '11:00',
+          '12:00',
+          '13:00',
+          '14:00',
+          '15:00',
+          '16:00',
+          '17:00',
+          '18:00',
+          '19:00',
+          '20:00',
+          '21:00',
+          '22:00',
+          '23:00',
+          '24:00'
+        ],
+        time:'',
+        status_options:[
+          '未着手',
+          '着手中',
+          '完了'
+        ],
+        stats:'未着手',
+        task_data:{
+          user_id:1,
+          task_list:[
+            {
+              task_id:1,
+              task_name:'aaa',
+              status:0,
+              task_detail:[
+                {
+                  task_id:1,
+                  task_detail_id:1,
+                  time:'2019/10/10 10:00',
+                  yotei:100,
+                  zisseki:50
                 }
-            },
-            openModal () {
-                this.showModal = true;
-            },
-            alert() {
-                Push.create("プッシュ通知！");
-                setTimeout(this.alert, this.nextRefreshTime());
-            },
-            setNameList(name_list){
-                this.task_name_list = name_list.concat();
+              ]
             }
+          ]
         }
+      }
+    },
+    mounted () {
+      setTimeout(this.alert, this.nextRefreshTime());
+    },
+    created () {
+      this.init();
+    },
+    computed: {
+      ...mapState({
+        task_name_list: state => state.task_name_list
+      })
+    },
+    methods: {
+      init(){
+        this.send();
+      },
+      nextRefreshTime() {
+        let minute = new Date().getMinutes();
+        return (30 - (minute % 30)) * 60 * 1000;
+      },
+      send () {
+        this.col_num =  Number(this.end.slice(0,2)) - Number(this.start.slice(0,2)) + 1;
+        this.working_time= Number(this.end.slice(0,2)) - Number(this.start.slice(0,2)) - this.break_time;
+        for (var i = this.start.slice(0,2); i < Number(this.start.slice(0,2)) + this.col_num; i++){
+          var label =  i + ':00'
+          this.row_label.push(label);
+        }
+      },
+      alert() {
+        Push.create("プッシュ通知！");
+        setTimeout(this.alert, this.nextRefreshTime());
+      }
     }
+  }
 </script>
 
 <style lang="scss">
