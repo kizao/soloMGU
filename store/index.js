@@ -14,13 +14,13 @@ export default {
   },
   mutations:{
     setTaskName(state,list) {
-      state.task_name_list = list.name_list.concat();
       state.status_list = JSON.parse(JSON.stringify(list.status_list));
       list.name_list.forEach((val,index) => {
         if(!state.status_list[index]) state.status_list[index] = 1;
         if(!state.fortune_list.plan[index]) state.fortune_list.plan[index]={};
         if(!state.fortune_list.result[index]) state.fortune_list.result[index]={};
       });
+      state.task_name_list = list.name_list.concat();
     },
     delTaskName(state, index) {
       state.task_name_list.splice(index, 1);

@@ -23,9 +23,6 @@ div
     tr
       td
         button(@click="send" class="btn btn-primary") 送信
-    tr
-      td
-        button(@click="allDelete" class="btn btn-primary") 全削除
 
   br
   br
@@ -56,7 +53,8 @@ div
           td(v-for="(val,y) in col_num" style="width:6%;")
             input(type="number" class="input_percent" min="0" max="100" v-model="fortune.result[i][y]" @change="editFortune")
             .percent %
-  modal
+  modal(style="display: inline-block; margin-right:  20px;")
+  button(style="display: inline-block;" @click="allDelete" class="btn btn-danger") 全削除
 </template>
 <script>
   import modal from './input'
@@ -119,10 +117,7 @@ div
         man_hour:{},
         val:'未着手',
         results:{},
-        fortune:{
-          plan:{0:''},
-          result:{0:''},
-        },
+        fortune:{},
         task:{}
       }
     },
@@ -149,6 +144,9 @@ div
       },
       man_hour_list: function(newValue) {
         this.man_hour = JSON.parse(JSON.stringify(newValue));
+      },
+      task_name_list: function() {
+        this.fortune = JSON.parse(JSON.stringify(this.fortune_list));
       }
     },
     methods: {
