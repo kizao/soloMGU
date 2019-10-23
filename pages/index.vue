@@ -30,24 +30,29 @@ div
   h3 {{time}}
   div(class="table-responsive" v-if="row_label.length > 0 && task_name_list.length > 0")
     table(border="1" class="table" style="table-layout: fixed; width:100%;")
-      tr
+      tr(bgcolor="#ff9966")
         th(class="fortune_col") タスク名
         th(class="fortune_col") ステータス
+        th(class="fortune_col") 見積(H)
         th(class="fortune_col") 予/実
         th(v-for="label in row_label") {{label}}
-      tbody(v-for="(task_name,i) in task_name_list")
+      tbody(v-for="(task_name,i) in task_name_list" :bgcolor="isCompleteColor(task_status_list[i])")
         tr
           td(rowspan="2" class="fortune_col") {{ task_name }}
           td(rowspan="2" class="fortune_col")
             select(v-model="task_status_list[i]" class="form-control" @change="fetchTags")
               option(v-for="status_option in status_options" :value="status_option.id") {{ status_option.label }}
-          td(class="fortune_col") 予定
-          td(v-for="val in col_num" style="width:6%;")
-            input(type="text" style="box-sizing:border-box; width:100%;")
+          td(rowspan="2" class="fortune_col")
+            input(type="number" style="width:100%;")
+          td(class="fortune_col" :bgcolor="isCompletePlanColor(task_status_list[i])") 予定
+          td(v-for="val in col_num" :bgcolor="isCompletePlanColor(task_status_list[i])" style="width:6%;")
+            input(type="number" min="0" max="100" class="input_percent")
+            .percent %
         tr
           td(class="fortune_col") 実績
-          td(v-for="val in col_num" style="width:6%;")
-            input(type="text" style="box-sizing:border-box; width:100%;")
+          td(v-for="(val,y) in col_num" style="width:6%;")
+            input(type="number" class="input_percent" min="0" max="100")
+            .percent %
   modal
 </template>
 <script>
@@ -109,6 +114,7 @@ div
         ],
         task_status_list:{},
         val:'未着手',
+        results:{},
         task_data:{
           user_id:1,
           task_list:[
@@ -171,6 +177,12 @@ div
       },
       fetchTags() {
         this.setStatus(this.task_status_list);
+      },
+      isCompleteColor(status_id) {
+        return status_id == 3 ? "gray":"white";
+      },
+      isCompletePlanColor(status_id) {
+        return status_id == 3 ? "gray":"silver";
       }
     }
   }
@@ -186,5 +198,16 @@ div
   }
   is_complete{
     background-color: red;
+  }
+  .input_percent {
+    text-align: center;
+    box-sizing:border-box;
+    width:80%;
+    display:inline-block;
+    vertical-align: middle;
+  }
+  .percent {
+    display: inline;
+    vertical-align: middle;
   }
 </style>
