@@ -23,6 +23,9 @@ div
     tr
       td
         button(@click="send" class="btn btn-primary") 送信
+    tr
+      td
+        button(@click="allDelete" class="btn btn-primary") 全削除
 
   br
   br
@@ -43,15 +46,15 @@ div
             select(v-model="task_status_list[i]" class="form-control" @change="fetchTags")
               option(v-for="status_option in status_options" :value="status_option.id") {{ status_option.label }}
           td(rowspan="2" class="fortune_col")
-            input(type="number" style="width:100%;")
+            input(type="number" style="width:100%;" v-model="man_hour[i]" @change="editMonHour")
           td(class="fortune_col" :bgcolor="isCompletePlanColor(task_status_list[i])") 予定
-          td(v-for="val in col_num" :bgcolor="isCompletePlanColor(task_status_list[i])" style="width:6%;")
-            input(type="number" min="0" max="100" class="input_percent")
+          td(v-for="(val,y) in col_num" :bgcolor="isCompletePlanColor(task_status_list[i])" style="width:6%;")
+            input(type="number" min="0" max="100" class="input_percent" v-model="fortune.plan[i][y]" @change="editFortune")
             .percent %
         tr
           td(class="fortune_col") 実績
           td(v-for="(val,y) in col_num" style="width:6%;")
-            input(type="number" class="input_percent" min="0" max="100")
+            input(type="number" class="input_percent" min="0" max="100" v-model="fortune.result[i][y]" @change="editFortune")
             .percent %
   modal
 </template>
@@ -113,27 +116,14 @@ div
           {id:3,  label: '完了'}
         ],
         task_status_list:{},
+        man_hour:{},
         val:'未着手',
         results:{},
-        task_data:{
-          user_id:1,
-          task_list:[
-            {
-              task_id:1,
-              task_name:'aaa',
-              status:0,
-              task_detail:[
-                {
-                  task_id:1,
-                  task_detail_id:1,
-                  time:'2019/10/10 10:00',
-                  yotei:100,
-                  zisseki:50
-                }
-              ]
-            }
-          ]
-        }
+        fortune:{
+          plan:{0:''},
+          result:{0:''},
+        },
+        task:{}
       }
     },
     mounted () {
@@ -141,21 +131,28 @@ div
     },
     created () {
       this.init();
-      console.log(this.status_list);
     },
     computed: {
       ...mapState({
         task_name_list: state => state.task_name_list,
-        status_list: state => state.status_list
+        status_list: state => state.status_list,
+        fortune_list: state => state.fortune_list,
+        man_hour_list: state => state.man_hour_list
       })
     },
     watch: {
       status_list: function(newValue) {
         this.task_status_list = JSON.parse(JSON.stringify(newValue));
+      },
+      fortune_list: function(newValue) {
+        this.fortune = JSON.parse(JSON.stringify(newValue));
+      },
+      man_hour_list: function(newValue) {
+        this.man_hour = JSON.parse(JSON.stringify(newValue));
       }
     },
     methods: {
-      ...mapMutations(['setStatus']),
+      ...mapMutations(['setStatus','setFortune','setManHourList','allReset']),
       init(){
         this.send();
       },
@@ -178,11 +175,23 @@ div
       fetchTags() {
         this.setStatus(this.task_status_list);
       },
+      editFortune() {
+        this.setFortune(this.fortune);
+      },
+      editMonHour() {
+        this.setManHourList(this.man_hour);
+      },
       isCompleteColor(status_id) {
         return status_id == 3 ? "gray":"white";
       },
       isCompletePlanColor(status_id) {
         return status_id == 3 ? "gray":"silver";
+      },
+      allDelete() {
+        this.allReset();
+        this.task_status_list = {};
+        this.fortune = {};
+        this.man_hour = {};
       }
     }
   }
