@@ -8,8 +8,9 @@ div
      @ok="onComplete"
   )
     p(v-if="error" style="color:red;") ※{{error}}
-    ul(class="list-group" style="max-width: 400px;")
-      li(class="list-group-item" v-for="(task_name,i) in name_list" @click="delName(i)") {{ task_name }}
+    ul(class="list-group" style="max-width: 500px;")
+      li(class="list-group-item" v-for="(task,i) in tmp_task_list" style="display: inline-block;") {{ task.name }}
+        button(class="btn btn-danger" style="display: inline-block; float: right;" @click="delName(i)") 削除
     input(type="text" v-model="name")
     b-button(@click="addTaskName") +
 </template>
@@ -19,51 +20,62 @@ div
   export default {
     data() {
       return {
-        name_list:[],
-        tmp_status_list:{},
         name:'',
-        error:''
+        error:'',
+        tmp_task_list:[],
       }
     },
     computed: {
       ...mapState({
-        task_name_list: state => state.task_name_list,
-        status_list: state => state.status_list
+        task_list: state => state.task_list
       })
     },
     watch: {
-      task_name_list: function(newValue) {
-        this.name_list = newValue.concat();
-      },
-      status_list: function(newValue) {
-        this.tmp_status_list = JSON.parse(JSON.stringify(newValue));
+      task_list: function(newValue) {
+        this.tmp_task_list = [];
+        newValue.forEach((val) => {
+          this.tmp_task_list.push(JSON.parse(JSON.stringify(val)));
+        });
       }
     },
     methods: {
-      ...mapMutations(['setTaskName','delTaskName']),
+      ...mapMutations(['setTaskList','delTaskName']),
       addTaskName() {
         if(this.validation(this.name)){
-          this.name_list.push(this.name);
+          let task = {
+                name: '',
+                status: 1,
+                man_hour: 0,
+                fortune:{
+                  plan:{},
+                  result:{}
+                }
+              }
+          task.name = this.name;
+          this.tmp_task_list.push(task);
           this.name='';
         }
       },
       onComplete() {
-        this.setTaskName({name_list: this.name_list, status_list: this.tmp_status_list});
+        this.setTaskList(this.tmp_task_list);
       },
       validation(name) {
         this.error='';
+        let result = true;
         if(!this.name){
           this.error = 'タスク名を入力してください';
-          return false;
-        }else if(this.name_list.includes(name)){
-          this.error = 'すでに存在するタスク名です'
-          return false;
+          result = false;
         }
-        return true;
+        this.tmp_task_list.forEach(task => {
+          if(task.name === this.name){
+            this.error = 'すでに存在するタスク名です'
+            result = false;
+          }
+        });
+        return result;
       },
       delName(i) {
-        this.name_list.splice(i, 1);
-        delete this.tmp_status_list[i];
+        this.delTaskName(i);
       },
 
     }
