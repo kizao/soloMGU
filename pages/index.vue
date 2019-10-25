@@ -26,7 +26,7 @@ div
           button(@click="send" class="btn btn-primary") 送信
   div(class="table-responsive" v-if="row_label.length > 0 && tmp_task_list.length > 0")
     table(border="1" class="table" style="table-layout: fixed; width:100%;")
-      tr(bgcolor="#ff9966")
+      tr(bgcolor="silver")
         th(class="fortune_col") タスク名
         th(class="fortune_col") ステータス
         th(class="fortune_col") 見積(H)
