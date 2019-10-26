@@ -34,7 +34,7 @@ div
         th(v-for="label in row_label") {{label}}
       tbody(v-for="(task,i) in tmp_task_list" :bgcolor="isCompleteColor(task.status)")
         tr
-          td(rowspan="2" class="fortune_col") {{ task.name }}
+          td.task_name_col(rowspan="2") {{ task.name }}
           td(rowspan="2" class="fortune_col")
             select(v-model="task.status" class="form-control" @change="editTask")
               option(v-for="status_option in status_options" :value="status_option.id") {{ status_option.label }}
@@ -113,14 +113,15 @@ div
       }
     },
     mounted () {
-      setTimeout(this.alert, this.nextRefreshTime());
+      if(this.timerFlg) setTimeout(this.timer, this.nextRefreshTime());
     },
     created () {
       this.init();
     },
     computed: {
       ...mapState({
-        task_list: state => state.task_list
+        task_list: state => state.task_list,
+        timerFlg: state => state.timerFlg
       })
     },
     watch: {
@@ -148,9 +149,9 @@ div
           this.row_label.push(label);
         }
       },
-      alert() {
+      timer() {
         Push.create("進捗を記入してください");
-        setTimeout(this.alert, this.nextRefreshTime());
+        setTimeout(this.timer, this.nextRefreshTime());
       },
       editTask() {
        this.setTaskList(this.tmp_task_list);
@@ -176,11 +177,17 @@ div
     width: 100px;
     white-space: nowrap;
   }
+  .task_name_col{
+    width: 100px;
+    word-wrap: break-word;
+  }
   .status_col{
     width:120px;
+    white-space: nowrap;
   }
   plan_col{
-    wihth:3dev0px;
+    wihth:60px;
+    white-space: nowrap;
   }
   is_complete{
     background-color: red;

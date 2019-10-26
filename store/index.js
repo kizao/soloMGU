@@ -4,6 +4,7 @@ export default {
   namespaced: true,
   state:{
     task_list:[],
+    timerFlg: false
   },
   mutations:{
     setTaskList(state,set_task_list) {
@@ -14,6 +15,9 @@ export default {
     },
     allReset(state) {
       state.task_list = [];
+    },
+    setTimerFlg(state, flg){
+      state.timerFlg = flg;
     }
   },
 

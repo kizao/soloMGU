@@ -11,7 +11,7 @@ div
   )
     p(v-if="error" style="color:red;") ※{{error}}
     ul(class="list-group" style="max-width: 500px;")
-      li(class="list-group-item" v-for="(task,i) in tmp_task_list" style="display: inline-block;") {{ task.name }}
+      li(class="list-group-item" v-for="(task,i) in tmp_task_list" style="display: inline-block; word-wrap: break-word;") {{ task.name }}
         button(class="btn btn-danger" style="display: inline-block; float: right;" @click="delName(i)") 削除
     input(type="text" v-model="name")
     b-button(@click="addTaskName") +
