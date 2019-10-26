@@ -3,54 +3,54 @@ div
   br
   br
   br
-  table
-    tr
-      td(align="right") 作業時刻
-      td
-        select(v-model="start")
-          option(v-for="option in opitons") {{option}}
-      td
-      td 〜
-      td(align="right")
-      td
-        select(v-model="end")
-          option(v-for="option in opitons") {{option}}
-    tr
-      td 休憩時間
-      td
-        select(v-model="break_time")
-          option(v-for="time in 10") {{time}}
-    tr
-      td
-        button(@click="send") 送信
-
-  br
-  br
-  h3 作業時間 {{ working_time }}
-  h3 {{time}}
-  div(class="table-responsive" v-if="row_label.length > 0 && task_name_list.length > 0")
-    table(border="1" class="table" style="table-layout: fixed; width:100%;")
+  //
+    table
       tr
+        td(align="right") 作業時刻
+        td
+          select(v-model="start" class="form-control")
+            option(v-for="option in opitons") {{option}}
+        td
+        td 〜
+        td(align="right")
+        td
+          select(v-model="end" class="form-control")
+            option(v-for="option in opitons") {{option}}
+      tr
+        td 休憩時間
+        td
+          select(v-model="break_time" class="form-control")
+            option(v-for="time in 10") {{time}}
+      tr
+        td
+          button(@click="send" class="btn btn-primary") 送信
+  div(class="table-responsive" v-if="row_label.length > 0 && tmp_task_list.length > 0")
+    table(border="1" class="table" style="table-layout: fixed; width:100%;")
+      tr(bgcolor="silver")
         th(class="fortune_col") タスク名
         th(class="fortune_col") ステータス
+        th(class="fortune_col") 見積(H)
         th(class="fortune_col") 予/実
         th(v-for="label in row_label") {{label}}
-      tbody(v-for="task_name in task_name_list")
+      tbody(v-for="(task,i) in tmp_task_list" :bgcolor="isCompleteColor(task.status)")
         tr
-          td(rowspan="2" class="fortune_col") {{ task_name }}
+          td(rowspan="2" class="fortune_col") {{ task.name }}
           td(rowspan="2" class="fortune_col")
-            select(v-model="stats")
-              option(v-for="status_option in status_options") {{ status_option }}
-          td(class="fortune_col") 予定
-          td(v-for="val in col_num" style="width:6%;")
-            input(type="text" style="box-sizing:border-box; width:100%;")
+            select(v-model="task.status" class="form-control" @change="editTask")
+              option(v-for="status_option in status_options" :value="status_option.id") {{ status_option.label }}
+          td(rowspan="2" class="fortune_col")
+            input(type="number" style="width:100%;" v-model="task.man_hour" @change="editTask")
+          td(class="fortune_col" :bgcolor="isCompletePlanColor(task.status)") 予定
+          td(v-for="(val,y) in col_num" :bgcolor="isCompletePlanColor(task.status)" style="width:6%;")
+            input(type="number" min="0" max="100" class="input_percent" v-model="task.fortune.plan[y]" @change="editTask")
+            .percent %
         tr
           td(class="fortune_col") 実績
-          td(v-for="val in col_num" style="width:6%;")
-            input(type="text" style="box-sizing:border-box; width:100%;")
-  modal(
-    :task_name_list="task_name_list"
-  )
+          td(v-for="(val,y) in col_num" style="width:6%;")
+            input(type="number" class="input_percent" min="0" max="100" v-model="task.fortune.result[y]" @change="editTask")
+            .percent %
+  modal(style="display: inline-block; margin-right:  20px;")
+  button(style="display: inline-block;" @click="allDelete" class="btn btn-danger") 全削除
 </template>
 <script>
   import modal from './input'
@@ -74,7 +74,7 @@ div
         DatePickerFormat: 'hh:mm',
         task_num : 1,
         start : '10:00',
-        end : '19:00',
+        end : '20:00',
         break_time: 1,
         row_label: [],
         opitons: [
@@ -105,30 +105,11 @@ div
         ],
         time:'',
         status_options:[
-          '未着手',
-          '着手中',
-          '完了'
+          {id:1, label:'未着手'},
+          {id:2,  label: '着手中'},
+          {id:3,  label: '完了'}
         ],
-        stats:'未着手',
-        task_data:{
-          user_id:1,
-          task_list:[
-            {
-              task_id:1,
-              task_name:'aaa',
-              status:0,
-              task_detail:[
-                {
-                  task_id:1,
-                  task_detail_id:1,
-                  time:'2019/10/10 10:00',
-                  yotei:100,
-                  zisseki:50
-                }
-              ]
-            }
-          ]
-        }
+        tmp_task_list:[]
       }
     },
     mounted () {
@@ -139,10 +120,19 @@ div
     },
     computed: {
       ...mapState({
-        task_name_list: state => state.task_name_list
+        task_list: state => state.task_list
       })
     },
+    watch: {
+      task_list: function(newValue) {
+        this.tmp_task_list = [];
+        newValue.forEach((val) => {
+          this.tmp_task_list.push(JSON.parse(JSON.stringify(val)));
+        });
+      }
+    },
     methods: {
+      ...mapMutations(['allReset','setTaskList']),
       init(){
         this.send();
       },
@@ -159,8 +149,20 @@ div
         }
       },
       alert() {
-        Push.create("プッシュ通知！");
+        Push.create("進捗を記入してください");
         setTimeout(this.alert, this.nextRefreshTime());
+      },
+      editTask() {
+       this.setTaskList(this.tmp_task_list);
+      },
+      isCompleteColor(status_id) {
+        return status_id == 3 ? "gray":"white";
+      },
+      isCompletePlanColor(status_id) {
+        return status_id == 3 ? "gray":"#F2F2F2";
+      },
+      allDelete() {
+        this.allReset();
       }
     }
   }
@@ -174,7 +176,22 @@ div
     width:3%;
     white-space: nowrap;
   }
+  fortune_col2{
+    width:5%;
+    white-space: nowrap;
+  }
   is_complete{
     background-color: red;
+  }
+  .input_percent {
+    text-align: center;
+    box-sizing:border-box;
+    width:80%;
+    display:inline-block;
+    vertical-align: middle;
+  }
+  .percent {
+    display: inline;
+    vertical-align: middle;
   }
 </style>
