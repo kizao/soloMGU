@@ -28,8 +28,8 @@ div
     table(border="1" class="table" style="table-layout: fixed; width:100%;")
       tr(bgcolor="silver")
         th(class="fortune_col") タスク名
-        th(class="fortune_col") ステータス
-        th(class="fortune_col") 見積(H)
+        th(class="status_col") ステータス
+        th(class="plan_col") 見積(H)
         th(class="fortune_col") 予/実
         th(v-for="label in row_label") {{label}}
       tbody(v-for="(task,i) in tmp_task_list" :bgcolor="isCompleteColor(task.status)")
@@ -172,13 +172,15 @@ div
   task_col{
     width:5%;
   }
-  fortune_col{
-    width:3%;
+  .fortune_col{
+    width: 100px;
     white-space: nowrap;
   }
-  fortune_col2{
-    width:5%;
-    white-space: nowrap;
+  .status_col{
+    width:120px;
+  }
+  plan_col{
+    wihth:3dev0px;
   }
   is_complete{
     background-color: red;
