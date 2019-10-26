@@ -1,10 +1,12 @@
 <template lang="pug">
 div
-  b-button(v-b-modal.modal-center) タスク追加
+  button.bg-orange(v-b-modal.modal-center class="btn btn-warning") タスク追加
   b-modal(
   　　id="modal-center"
   　　centered
   　　title="タスク一覧"
+     ok-title="完了"
+     cancel-title="キャンセル"
      @ok="onComplete"
   )
     p(v-if="error" style="color:red;") ※{{error}}
@@ -107,5 +109,9 @@ div
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;
+  }
+  .bg-orange{
+    background-color: #FF9900;
+    color: #F7F8FB;
   }
 </style>
