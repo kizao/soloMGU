@@ -3,27 +3,6 @@ div
   br
   br
   br
-  //
-    table
-      tr
-        td(align="right") 作業時刻
-        td
-          select(v-model="start" class="form-control")
-            option(v-for="option in opitons") {{option}}
-        td
-        td 〜
-        td(align="right")
-        td
-          select(v-model="end" class="form-control")
-            option(v-for="option in opitons") {{option}}
-      tr
-        td 休憩時間
-        td
-          select(v-model="break_time" class="form-control")
-            option(v-for="time in 10") {{time}}
-      tr
-        td
-          button(@click="send" class="btn btn-primary") 送信
   div(class="table-responsive" v-if="row_label.length > 0 && tmp_task_list.length > 0")
     table(border="1" class="table" style="table-layout: fixed; width:100%;")
       tr(bgcolor="silver")
@@ -41,13 +20,13 @@ div
           td(rowspan="2" class="fortune_col")
             input(type="number" style="width:100%;" v-model="task.man_hour" @change="editTask")
           td(class="fortune_col" :bgcolor="isCompletePlanColor(task.status)") 予定
-          td(v-for="(val,y) in col_num" :bgcolor="isCompletePlanColor(task.status)" style="width:6%;")
-            input(type="number" min="0" max="100" class="input_percent" v-model="task.fortune.plan[y]" @change="editTask")
+          td(v-for="val in col_num" :bgcolor="isCompletePlanColor(task.status)" style="width:6%;")
+            input(type="number" min="0" max="100" class="input_percent" v-model="task.fortune.plan[val]" @change="editTask")
             .percent %
         tr
           td(class="fortune_col") 実績
-          td(v-for="(val,y) in col_num" style="width:6%;")
-            input(type="number" class="input_percent" min="0" max="100" v-model="task.fortune.result[y]" @change="editTask")
+          td(v-for="(val in col_num" style="width:6%;")
+            input(type="number" class="input_percent" min="0" max="100" v-model="task.fortune.result[val]" @change="editTask")
             .percent %
   modal(style="display: inline-block; margin-right:  20px;")
   button(style="display: inline-block;" @click="allDelete" class="btn btn-danger") 全削除
@@ -70,45 +49,15 @@ div
     data() {
       return {
         col_num: 0,
-        working_time: 0,
-        DatePickerFormat: 'hh:mm',
-        task_num : 1,
-        start : '10:00',
-        end : '20:00',
-        break_time: 1,
         row_label: [],
-        opitons: [
-          '01:00',
-          '02:00',
-          '03:00',
-          '04:00',
-          '05:00',
-          '06:00',
-          '07:00',
-          '08:00',
-          '09:00',
-          '10:00',
-          '11:00',
-          '12:00',
-          '13:00',
-          '14:00',
-          '15:00',
-          '16:00',
-          '17:00',
-          '18:00',
-          '19:00',
-          '20:00',
-          '21:00',
-          '22:00',
-          '23:00',
-          '24:00'
-        ],
         time:'',
         status_options:[
           {id:1, label:'未着手'},
           {id:2,  label: '着手中'},
           {id:3,  label: '完了'}
         ],
+        current_start:0,
+        current_end:0,
         tmp_task_list:[]
       }
     },
@@ -116,12 +65,14 @@ div
       if(this.timerFlg) setTimeout(this.timer, this.nextRefreshTime());
     },
     created () {
-      this.init();
+      this.createLabel(this.workingTime);
     },
     computed: {
       ...mapState({
         task_list: state => state.task_list,
-        timerFlg: state => state.timerFlg
+        timerFlg: state => state.timerFlg,
+        workingTime: state => state.workingTime,
+        time_opitons: state => state.time_opitons
       })
     },
     watch: {
@@ -130,23 +81,25 @@ div
         newValue.forEach((val) => {
           this.tmp_task_list.push(JSON.parse(JSON.stringify(val)));
         });
-      }
+      },
+      workingTime: function(newValue) {
+        this.createLabel(newValue);
+      },
     },
     methods: {
       ...mapMutations(['allReset','setTaskList']),
-      init(){
-        this.send();
-      },
       nextRefreshTime() {
         let minute = new Date().getMinutes();
         return (30 - (minute % 30)) * 60 * 1000;
       },
-      send () {
-        this.col_num =  Number(this.end.slice(0,2)) - Number(this.start.slice(0,2)) + 1;
-        this.working_time= Number(this.end.slice(0,2)) - Number(this.start.slice(0,2)) - this.break_time;
-        for (var i = this.start.slice(0,2); i < Number(this.start.slice(0,2)) + this.col_num; i++){
-          var label =  i + ':00'
-          this.row_label.push(label);
+      createLabel(workingTime){
+        this.current_start = workingTime.start;
+        this.current_end = workingTime.end;
+        this.col_num = [];
+        this.row_label = [];
+        for (var i = workingTime.start; i < workingTime.end + 1; i++){
+          this.col_num.push(i);
+          this.row_label.push(this.time_opitons[i].label);
         }
       },
       timer() {

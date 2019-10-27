@@ -8,10 +8,21 @@
    )
      table.table-borderless(style="width:100%;")
        tr
-         td タイマー設定
+         td(style="width:40%;") タイマー設定
          td
-           select(v-model="timerFlg" style="height: 30px;" class="selectpicker" @change="editTimer")
+           select.form-control(v-model="timerFlg" style="height: 40px;" @change="editTimer")
               option(v-for="timer_opiton in timer_opitons" :value="timer_opiton.flg") {{ timer_opiton.label }}
+     table.table-borderless(style="width:100%;")
+       tr
+        td(style="width:40%; white-space: nowrap;") 始業時刻
+        td
+          select.form-control(v-model="start" @change="editWorkingTime()")
+            option(v-for="option in time_opitons" :value="option.id") {{option.label}}
+       tr
+        td(style="width:40%;") 終業時刻
+        td
+          select.form-control(v-model="end" @change="editWorkingTime()")
+            option(v-for="option in time_opitons" :value="option.id") {{option.label}}
      br
      br
      br
@@ -25,11 +36,26 @@
         timer_opitons: [
           {flg:false, label:'タイマー設定しない'},
           {flg:true, label:'タイマー設定する'}
-        ]
+        ],
+        start : 0,
+        end : 0
       }
+    },
+    computed: {
+      ...mapState({
+        workingTime: state => state.workingTime,
+        time_opitons: state => state.time_opitons
+      })
+    },
+    watch: {
+      workingTime: function(newValue) {
+        this.start = this.workingTime.start;
+        this.end = this.workingTime.end;
+      },
     },
 
     methods: {
+      ...mapMutations(['setWorkingTime']),
       editTimer(){
         if(this.timerFlg){
           Push.create("タイマー設定がONになりました");
@@ -37,9 +63,12 @@
           Push.create("タイマー設定がOFFになりました");
           clearTimeout();
         }
+      },
+      editWorkingTime(){
+        this.setWorkingTime({start:this.start,end: this.end});
       }
     }
   }
-</script lang="scss">
+</script>
 <style>
 </style>
