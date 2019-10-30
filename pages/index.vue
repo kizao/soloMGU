@@ -3,6 +3,14 @@ div
   br
   br
   br
+  table
+    tr
+      td タスク達数
+      td {{ complete_num }} / {{ task_list.length }}
+    tr
+      td タスク達成率
+      td {{ complete_percent }} %
+  br
   div(class="table-responsive" v-if="row_label.length > 0 && tmp_task_list.length > 0")
     table(border="1" class="table" style="table-layout: fixed; width:100%;")
       tr(bgcolor="silver")
@@ -58,14 +66,15 @@ div
         ],
         current_start:0,
         current_end:0,
-        tmp_task_list:[]
+        tmp_task_list:[],
+        complete_num:0
       }
     },
     mounted () {
       if(this.timerFlg) setTimeout(this.timer, this.nextRefreshTime());
     },
     created () {
-      this.createLabel(this.workingTime);
+      this.init();
     },
     computed: {
       ...mapState({
@@ -73,7 +82,12 @@ div
         timerFlg: state => state.timerFlg,
         workingTime: state => state.workingTime,
         time_opitons: state => state.time_opitons
-      })
+      }),
+
+      complete_percent() {
+        let x = this.complete_num /this.task_list.length;
+        return Math.round(x * 100);
+      }
     },
     watch: {
       task_list: function(newValue) {
@@ -81,6 +95,7 @@ div
         newValue.forEach((val) => {
           this.tmp_task_list.push(JSON.parse(JSON.stringify(val)));
         });
+        this.calculation();
       },
       workingTime: function(newValue) {
         this.createLabel(newValue);
@@ -88,6 +103,9 @@ div
     },
     methods: {
       ...mapMutations(['allReset','setTaskList']),
+      init() {
+        this.createLabel(this.workingTime);
+      },
       nextRefreshTime() {
         let minute = new Date().getMinutes();
         return (30 - (minute % 30)) * 60 * 1000;
@@ -108,6 +126,14 @@ div
       },
       editTask() {
        this.setTaskList(this.tmp_task_list);
+      },
+      calculation() {
+        this.complete_num = 0;
+        this.tmp_task_list.forEach( task => {
+          if(task.status === 3){
+            this.complete_num ++;
+          }
+        });
       },
       isCompleteColor(status_id) {
         return status_id == 3 ? "gray":"white";
