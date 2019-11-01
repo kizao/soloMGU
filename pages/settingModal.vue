@@ -10,7 +10,7 @@
        tr
          td(style="width:40%;") タイマー設定
          td
-           select.form-control(v-model="timerFlg" style="height: 40px;" @change="editTimer")
+           select.form-control(v-model="tmpTimerFlg" style="height: 40px;" @change="editTimer")
               option(v-for="timer_opiton in timer_opitons" :value="timer_opiton.flg") {{ timer_opiton.label }}
      table.table-borderless(style="width:100%;")
        tr
@@ -32,7 +32,7 @@
   export default {
     data() {
       return {
-        timerFlg : false,
+        tmpTimerFlg : false,
         timer_opitons: [
           {flg:false, label:'タイマー設定しない'},
           {flg:true, label:'タイマー設定する'}
@@ -44,7 +44,8 @@
     computed: {
       ...mapState({
         workingTime: state => state.workingTime,
-        time_opitons: state => state.time_opitons
+        time_opitons: state => state.time_opitons,
+        timerFlg: state => state.timerFlg
       })
     },
     watch: {
@@ -52,16 +53,21 @@
         this.start = this.workingTime.start;
         this.end = this.workingTime.end;
       },
+      timerFlg: function(newValue){
+        this.tmpTimerFlg = this.timerFlg;
+      }
     },
 
     methods: {
-      ...mapMutations(['setWorkingTime']),
+      ...mapMutations(['setWorkingTime','setTimerFlg']),
       editTimer(){
-        if(this.timerFlg){
+        if(this.tmpTimerFlg){
           Push.create("タイマー設定がONになりました");
+          this.setTimerFlg(this.tmpTimerFlg);
         } else {
           Push.create("タイマー設定がOFFになりました");
           clearTimeout();
+          this.setTimerFlg(this.tmpTimerFlg);
         }
       },
       editWorkingTime(){
