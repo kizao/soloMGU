@@ -1,8 +1,5 @@
 <template lang="pug">
 div
-  br
-  br
-  br
   table
     tr
       td タスク達数
