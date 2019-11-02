@@ -14,22 +14,18 @@ no-ssr
 
 </template>
 <script>
-  import {mapState, mapMutations, mapActions} from 'vuex';
   export default {
-    data() {
-      return {
+    name: "QAForm",
+    methods: {
+      updatePanelist (ev) {
+        this.currentPanelist = ev.target.value
       }
     },
-    computed: {
-      ...mapState({
-        workingTime: state => state.workingTime,
-      })
-    },
-    watch: {
-    },
-
-    methods: {
-      ...mapMutations(['setWorkingTime','setTimerFlg']),
+    data () {
+      return {
+        panelists: ['Evan You', 'Chris Fritz'],
+        currentPanelist: 'Evan You'
+      }
     }
   }
 </script>
