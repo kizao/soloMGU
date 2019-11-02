@@ -4,7 +4,7 @@
     hide-footer
     title="問い合わせ"
    )
-    form(name="contact" netlify-honeypot="bot-field" action="thank-you" data-netlify="true" method="post")
+    form(netlify name="contact" netlify-honeypot="bot-field" action="thank-you" data-netlify="true" method="post")
       input(type="hidden" name="form-name" value="contact")
       table.table
         tr
