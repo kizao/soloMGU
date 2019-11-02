@@ -1,4 +1,5 @@
 <template lang="pug">
+no-ssr
   b-modal(
     id="contactModal"
     hide-footer
