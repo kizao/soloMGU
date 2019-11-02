@@ -5,25 +5,12 @@ no-ssr
     hide-footer
     title="問い合わせ"
    )
-    form(netlify name="contact" netlify-honeypot="bot-field" action="thank-you" data-netlify="true" method="post")
-      input(type="hidden" name="form-name" value="contact")
-      table.table
-        tr
-          td お名前
-          td
-            input(type='text', name='name')
-        tr
-          td Eメールアドレス
-          td
-            input(type='email', name='email')
-        tr
-          td 内容
-          td
-            textarea(name='message')
-        tr
-          td
-          td
-            button(type='submit' class="btn btn-primary" style="float: right;") 送信
+    form(name="ask-question" method="post" data-netlify="true" data-netlify-honeypot="bot-field")
+      input(type="hidden" name="form-name" value="ask-question")
+      label(v-for="(panelist, index) in panelists" :key="index")
+        input(type="radio" name="panelist" :value="panelist" @input="ev => updatePanelist" :checked="panelist === currentPanelist")
+        span {{ panelist }}
+      button Submit
 
 </template>
 <script>
