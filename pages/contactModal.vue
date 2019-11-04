@@ -5,35 +5,17 @@ div
     .form-group
       label.col-sm-3.control-label(for='name1') お名前
       .col-sm-6
-        input.form-control(type='text', name='')
+        input.form-control(type='text', name='name' required)
     .form-group
       label.col-sm-3.control-label(for='email') メールアドレス
       .col-sm-6
-        input.form-control(type='text', name='')
+        input.form-control(type='text', name='email' required)
     .form-group
       label.col-sm-3.control-label(for='ask1') お問い合わせ内容
       .col-sm-6
-        textarea.form-control(rows='7', name='')
+        textarea.form-control(rows='7', name='message' required)
     .form-group
       label.col-sm-3
       .col-sm-9
         button.btn.btn-primary(nuxt-link to="/") 送信する
 </template>
-<script>
-  export default {
-    name: "QAForm",
-    methods: {
-      updatePanelist (ev) {
-        this.currentPanelist = ev.target.value
-      }
-    },
-    data () {
-      return {
-        panelists: ['Evan You', 'Chris Fritz'],
-        currentPanelist: 'Evan You'
-      }
-    }
-  }
-</script>
-<style>
-</style>
