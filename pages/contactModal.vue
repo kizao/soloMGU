@@ -1,10 +1,5 @@
 <template lang="pug">
-no-ssr
-  b-modal(
-    id="contactModal"
-    hide-footer
-    title="問い合わせ"
-   )
+  span aaaaa
     form(name="ask-question" method="post" data-netlify="true" data-netlify-honeypot="bot-field")
       input(type="hidden" name="form-name" value="ask-question")
       label(v-for="(panelist, index) in panelists" :key="index")

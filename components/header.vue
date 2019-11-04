@@ -9,9 +9,8 @@ b-navbar(toggleable='md', type='dark' class="bg-orange")
         template(slot='button-content')
           img(src="~/assets/gear.png" style="width:30px;" )
         b-dropdown-item(v-b-modal.settingModal) 詳細設定
-        b-dropdown-item(v-b-modal.contactModal) 問い合わせ
+        b-dropdown-item(nuxt-link to="/contactModal") 問い合わせ
   settingModal
-  contactModal
 </template>
 <script>
   import settingModal from '~/pages/settingModal.vue'
