@@ -1,13 +1,14 @@
 <template lang="pug">
 b-navbar(toggleable='md', type='dark' class="bg-orange")
   b-navbar-toggle(target='nav_collapse')
-  b-navbar-brand(href=''  style="font-weight: 900;") soloMGU
+  b-navbar-brand(nuxt-link to="/"  style="font-weight: 900;") soloMGU
   b-collapse#nav_collapse(is-nav='')
     b-navbar-nav.ml-auto
       b-nav-item-dropdown(right='')
         // Using button-content slot
         template(slot='button-content')
           img(src="~/assets/gear.png" style="width:30px;" )
+        b-dropdown-item(nuxt-link to="/") ホーム
         b-dropdown-item(v-b-modal.settingModal) 詳細設定
         b-dropdown-item(nuxt-link to="/contactModal") 問い合わせ
   settingModal
