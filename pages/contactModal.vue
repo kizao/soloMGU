@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  form.form-horizontal(name="contact" method="post" data-netlify="true" data-netlify-honeypot="bot-field")
+  form.form-horizontal(name="contact" method="post" data-netlify="true")
     input(type="hidden" name="form-name" value="contact")
     .form-group
       label.col-sm-3.control-label お名前
