@@ -13,8 +13,8 @@ div
       tr(bgcolor="silver")
         th(class="fortune_col") タスク名
         th(class="status_col") ステータス
-        th(class="plan_col") 見積(H)
-        th(class="fortune_col") 予/実
+        th(class="plan_col2" style="width:100px;") 見積(H)
+        th(class="fortune_col2") 予/実
         th(v-for="label in row_label") {{label}}
       tbody(v-for="(task,i) in tmp_task_list" :bgcolor="isCompleteColor(task.status)")
         tr
@@ -23,7 +23,8 @@ div
             select(v-model="task.status" class="form-control" @change="editTask")
               option(v-for="status_option in status_options" :value="status_option.id") {{ status_option.label }}
           td(rowspan="2" class="fortune_col")
-            input(type="number" style="width:100%;" v-model="task.man_hour" @change="editTask")
+            input(type="number" style="width:50%;" v-model="task.man_hour" @change="editTask")
+            .percent H
           td(class="fortune_col" :bgcolor="isCompletePlanColor(task.status)") 予定
           td(v-for="val in col_num" :bgcolor="isCompletePlanColor(task.status)" style="width:6%;")
             input(type="number" min="0" max="100" class="input_percent" v-model="task.fortune.plan[val]" @change="editTask")
@@ -178,5 +179,9 @@ div
   .percent {
     display: inline;
     vertical-align: middle;
+  }
+  .fortune_col2{
+    width: 80px;
+    white-space: nowrap;
   }
 </style>
