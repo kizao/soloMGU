@@ -82,8 +82,8 @@ div
       }),
 
       complete_percent() {
-        let x = this.complete_num /this.task_list.length;
-        return Math.round(x * 100);
+        let x = Math.round(this.complete_num /this.task_list.length * 100);
+        return x? x:0
       }
     },
     watch: {
