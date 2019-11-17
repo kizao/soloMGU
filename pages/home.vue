@@ -26,12 +26,12 @@ div
             input(type="number" style="width:50%;" v-model="task.man_hour" @change="editTask")
             .percent H
           td(class="fortune_col" :bgcolor="isCompletePlanColor(task.status)") 予定
-          td(v-for="val in col_num" :bgcolor="isCompletePlanColor(task.status)" style="width:6%;")
+          td(v-for="val in col_num" :bgcolor="isCompletePlanColor(task.status)" style="width:6%; white-space: nowrap;")
             input(type="number" min="0" max="100" class="input_percent" v-model="task.fortune.plan[val]" @change="editTask")
             .percent %
         tr
           td(class="fortune_col") 実績
-          td(v-for="(val in col_num" style="width:6%;")
+          td(v-for="(val in col_num" style="width:6%; white-space: nowrap;")
             input(type="number" class="input_percent" min="0" max="100" v-model="task.fortune.result[val]" @change="editTask")
             .percent %
   modal(style="display: inline-block; margin-right:  20px;")
@@ -179,6 +179,7 @@ div
   .percent {
     display: inline;
     vertical-align: middle;
+    white-space: nowrap;
   }
   .fortune_col2{
     width: 80px;
