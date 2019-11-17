@@ -17,5 +17,5 @@ div
     .form-group
       label.col-sm-3
       .col-sm-9
-        button.btn.btn-primary(type="submit" nuxt-link to="/") 送信する
+        button.btn.btn-primary(type="submit") 送信する
 </template>

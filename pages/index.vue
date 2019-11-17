@@ -1,182 +1,107 @@
-<template lang="pug">
-div
-  table
-    tr
-      td タスク達数
-      td {{ complete_num }} / {{ task_list.length }}
-    tr
-      td タスク達成率
-      td {{ complete_percent }} %
-  br
-  div(class="table-responsive" v-if="row_label.length > 0 && tmp_task_list.length > 0")
-    table(border="1" class="table" style="table-layout: fixed; width:100%;")
-      tr(bgcolor="silver")
-        th(class="fortune_col") タスク名
-        th(class="status_col") ステータス
-        th(class="plan_col") 見積(H)
-        th(class="fortune_col") 予/実
-        th(v-for="label in row_label") {{label}}
-      tbody(v-for="(task,i) in tmp_task_list" :bgcolor="isCompleteColor(task.status)")
-        tr
-          td.task_name_col(rowspan="2") {{ task.name }}
-          td(rowspan="2" class="fortune_col")
-            select(v-model="task.status" class="form-control" @change="editTask")
-              option(v-for="status_option in status_options" :value="status_option.id") {{ status_option.label }}
-          td(rowspan="2" class="fortune_col")
-            input(type="number" style="width:100%;" v-model="task.man_hour" @change="editTask")
-          td(class="fortune_col" :bgcolor="isCompletePlanColor(task.status)") 予定
-          td(v-for="val in col_num" :bgcolor="isCompletePlanColor(task.status)" style="width:6%;")
-            input(type="number" min="0" max="100" class="input_percent" v-model="task.fortune.plan[val]" @change="editTask")
-            .percent %
-        tr
-          td(class="fortune_col") 実績
-          td(v-for="(val in col_num" style="width:6%;")
-            input(type="number" class="input_percent" min="0" max="100" v-model="task.fortune.result[val]" @change="editTask")
-            .percent %
-  modal(style="display: inline-block; margin-right:  20px;")
-  button(style="display: inline-block;" @click="allDelete" class="btn btn-danger") 全削除
+<template>
+<div id="page-top">
+  <header class="masthead" style="padding-top: 80px; padding-bottom: 80px;">
+    <div class="container h-100">
+      <div class="row h-100">
+        <div class="col-lg-10 my-auto">
+          <div class="header-content mx-auto">
+            <h1 class="mb-5">個人の短期間に特化したタスクツールです</h1>
+            <a href="/home" class="btn btn-outline btn-xl js-scroll-trigger">使ってみる</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="features" id="features">
+    <div class="container">
+      <div class="section-heading text-center">
+        <h2>soloMGUとは</h2>
+        <p class="text-muted">休日に勉強しようとしたときにダラダラやってしまう。Youtubeみたり漫画読んだり...</p>
+        <p class="text-muted">そんなときに1時間ごとに予定を立ててメリハリをつけてタスクを実行するようにするツールです。</p>
+        <hr>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col-lg-2 my-auto">
+          <div class="device-container">
+            <div class="device-mockup iphone6_plus portrait white">
+              <div class="device">
+                <div class="screen">
+                  <!-- Demo image for screen mockup, you can put an image here, some HTML, an animation, video, or anything else! -->
+                  <img src="img/demo-screen-1.jpg" class="img-fluid" alt="">
+                </div>
+                <div class="button">
+                  <!-- You can hook the "home button" to some JavaScript events or just remove it -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8 my-auto">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="feature-item">
+                  <i class="icon-screen-smartphone text-primary"></i>
+                  <img src="~/assets/no_registration.png" class="img-fluid icon" alt=">登録不要アイコン">
+                  <div>
+                    <h3>登録不要</h3>
+                    <p class="text-muted">サイトへのアカウント登録は不要です。</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="feature-item">
+                  <i class="icon-camera text-primary"></i>
+                  <img src="~/assets/easy_operation.png" class="img-fluid icon" alt="直感的に操作できますアイコン">
+                  <h3>直感的に操作できます</h3>
+                  <p class="text-muted">操作を覚えることなく直感的にサイトを使うことができます。</p>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="feature-item">
+                  <i class="icon-present text-primary"></i>
+                  <img src="~/assets/clock.png" class="img-fluid icon" alt="タイマー機能アイコン">
+                  <h3>タイマー機能</h3>
+                  <p class="text-muted">タイマー機能により時間を意識しながらタスクをこなせます。</p>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="feature-item">
+                  <i class="icon-lock-open text-primary"></i>
+                  <img src="~/assets/free.png" class="img-fluid icon" alt="無料で使えるアイコン">
+                  <h3>無料で使える</h3>
+                  <p class="text-muted">全ての機能を無料で使うことができます。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
 </template>
-<script>
-  import modal from './input'
-  import {mapState, mapMutations, mapActions} from 'vuex';
-  export default {
-    head () {
-      return {
-        script: [
-          { src: 'https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.9/push.min.js' }
-        ],
-        link: []
-      }
-    },
-    components: {
-      modal
-    },
-    data() {
-      return {
-        col_num: 0,
-        row_label: [],
-        time:'',
-        status_options:[
-          {id:1, label:'未着手'},
-          {id:2,  label: '着手中'},
-          {id:3,  label: '完了'}
-        ],
-        current_start:0,
-        current_end:0,
-        tmp_task_list:[],
-        complete_num:0
-      }
-    },
-    mounted () {
-      if(this.timerFlg) setTimeout(this.timer, this.nextRefreshTime());
-    },
-    created () {
-      this.init();
-    },
-    computed: {
-      ...mapState({
-        task_list: state => state.task_list,
-        timerFlg: state => state.timerFlg,
-        workingTime: state => state.workingTime,
-        time_opitons: state => state.time_opitons
-      }),
-
-      complete_percent() {
-        let x = this.complete_num /this.task_list.length;
-        return Math.round(x * 100);
-      }
-    },
-    watch: {
-      task_list: function(newValue) {
-        this.tmp_task_list = [];
-        newValue.forEach((val) => {
-          this.tmp_task_list.push(JSON.parse(JSON.stringify(val)));
-        });
-        this.calculation();
-      },
-      workingTime: function(newValue) {
-        this.createLabel(newValue);
-      },
-    },
-    methods: {
-      ...mapMutations(['allReset','setTaskList']),
-      init() {
-        this.createLabel(this.workingTime);
-      },
-      nextRefreshTime() {
-        let minute = new Date().getMinutes();
-        return (30 - (minute % 30)) * 60 * 1000;
-      },
-      createLabel(workingTime){
-        this.current_start = workingTime.start;
-        this.current_end = workingTime.end;
-        this.col_num = [];
-        this.row_label = [];
-        for (var i = workingTime.start; i < workingTime.end + 1; i++){
-          this.col_num.push(i);
-          this.row_label.push(this.time_opitons[i].label);
-        }
-      },
-      timer() {
-        Push.create("進捗を記入してください");
-        setTimeout(this.timer, this.nextRefreshTime());
-      },
-      editTask() {
-       this.setTaskList(this.tmp_task_list);
-      },
-      calculation() {
-        this.complete_num = 0;
-        this.tmp_task_list.forEach( task => {
-          if(task.status === 3){
-            this.complete_num ++;
-          }
-        });
-      },
-      isCompleteColor(status_id) {
-        return status_id == 3 ? "gray":"white";
-      },
-      isCompletePlanColor(status_id) {
-        return status_id == 3 ? "gray":"#F2F2F2";
-      },
-      allDelete() {
-        this.allReset();
-      }
-    }
+<style>
+  header.masthead {
+    position: relative;
+    width: 100%;
+    padding-top: 150px;
+    padding-bottom: 100px;
+    color: white;
+    background: url(".././assets/bg-pattern.png"), #FF9900;
+    background: url(".././assets/bg-pattern.png"), linear-gradient(to left, #FF9900, #FF9900);
   }
-</script>
-
-<style lang="scss">
-  task_col{
-    width:5%;
+  .btn-outline {
+    color: white;
+    border: 1px solid;
+    border-color: white;
   }
-  .fortune_col{
-    width: 100px;
-    white-space: nowrap;
-  }
-  .task_name_col{
-    width: 100px;
-    word-wrap: break-word;
-  }
-  .status_col{
-    width:120px;
-    white-space: nowrap;
-  }
-  plan_col{
-    wihth:60px;
-    white-space: nowrap;
-  }
-  is_complete{
-    background-color: red;
-  }
-  .input_percent {
-    text-align: center;
-    box-sizing:border-box;
-    width:80%;
-    display:inline-block;
-    vertical-align: middle;
-  }
-  .percent {
-    display: inline;
-    vertical-align: middle;
+  .icon{
+    width:130px;
+    height: 130px;
+    float: left;
   }
 </style>
+
