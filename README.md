@@ -21,3 +21,16 @@ $ npm run generate
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
 # sgStoicer
+
+■ Description
+```
+This source is for web application services that perform task management.
+Please use it freely as it is an OSS.
+```
+https://epic-elion-4c311e.netlify.com/
+
+■ Technology used
+```
+・ Nust.js
+・ Bootstrap4
+```
